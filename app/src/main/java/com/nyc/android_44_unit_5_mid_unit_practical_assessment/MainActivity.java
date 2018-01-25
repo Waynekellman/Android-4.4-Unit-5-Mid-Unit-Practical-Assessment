@@ -1,5 +1,6 @@
 package com.nyc.android_44_unit_5_mid_unit_practical_assessment;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,11 +31,17 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean hitRefresh;
     private static final String INSTANCE_STATE_KEY = "Users";
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.show();
 
         recyclerView = findViewById(R.id.recyclerView);
         adapter = new UserAdapter();
@@ -64,11 +71,16 @@ public class MainActivity extends AppCompatActivity {
                 users = response.body();
                 adapter.setAdapter(users.getResults());
                 recyclerView.setAdapter(adapter);
+                if (mProgressDialog.isShowing()){
+                    mProgressDialog.dismiss();
+                }
             }
 
             @Override
             public void onFailure(Call<Users> call, Throwable t) {
-
+                if (mProgressDialog.isShowing()){
+                    mProgressDialog.dismiss();
+                }
             }
         });
     }
@@ -93,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.refresh:
 
             retrofitCall();
+            mProgressDialog.show();
 
             default:
                 return super.onOptionsItemSelected(item);
