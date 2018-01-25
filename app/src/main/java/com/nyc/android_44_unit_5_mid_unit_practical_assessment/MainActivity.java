@@ -37,13 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);
+        adapter = new UserAdapter();
         GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         if (savedInstanceState != null){
             String userString = savedInstanceState.getString(INSTANCE_STATE_KEY);
             users = new Gson().fromJson(userString, Users.class);
             Log.d(TAG, "onCreate: " + users.getResults()[0].getName().getFirst());
-            adapter = new UserAdapter(users.getResults());
+            adapter.setAdapter(users.getResults());
             recyclerView.setAdapter(adapter);
         } else {
             retrofitCall();
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Users> call, Response<Users> response) {
                 users = response.body();
-                adapter = new UserAdapter(users.getResults());
+                adapter.setAdapter(users.getResults());
                 recyclerView.setAdapter(adapter);
             }
 
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.refresh:
 
-
+            retrofitCall();
 
             default:
                 return super.onOptionsItemSelected(item);
